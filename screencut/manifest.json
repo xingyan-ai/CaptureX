@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "ScreenCut - 精准比例截图",
+  "version": "1.0.0",
+  "description": "为博客和公众号制作精准比例的截图工具，支持1.75:1和2.35:1两种专业比例",
+  
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "downloads",
+    "clipboardWrite"
+  ],
+  
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "ScreenCut 截图工具",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  
+  
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png", 
+    "128": "icons/icon128.png"
+  },
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["utils/ratio-calculator.js"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 

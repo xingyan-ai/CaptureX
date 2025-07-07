@@ -1,0 +1,128 @@
+---
+alwaysApply: true
+---
+
+# 截图功能开发规范
+
+## 核心比例要求
+ScreenCut插件专门为内容创作者设计，必须严格支持以下两种比例：
+- **1.75:1** - 博客横幅比例
+- **2.35:1** - 公众号封面比例
+
+## 比例计算核心逻辑
+```javascript
+/**
+ * 核心比例计算规则
+ * 默认宽度400px，根据比例计算对应高度
+ */
+const calculateDimensions = (ratio, width = 400) => {
+  return {
+    width: width,
+    height: Math.round(width / ratio)
+  };
+};
+
+// 1.75:1 → 400x229px
+// 2.35:1 → 400x170px
+```
+
+## 截图框交互要求
+1. **初始状态**: 根据选择比例生成默认尺寸截图框
+2. **拖拽移动**: 点击框内任意位置可移动位置
+3. **等比例缩放**: 拖拽四角控制点进行缩放，严格保持比例
+4. **实时反馈**: 显示当前像素尺寸信息
+5. **边界检测**: 防止截图框超出页面可视区域
+
+## 截图质量标准
+- **格式**: PNG格式，保证透明度支持
+- **分辨率**: 支持高分辨率屏幕(Retina)，考虑devicePixelRatio
+- **最小尺寸**: 不小于100px宽度
+- **最大尺寸**: 不超过页面可视区域
+
+## html2canvas配置要求
+```javascript
+const canvasOptions = {
+  scale: window.devicePixelRatio || 1,
+  useCORS: true,
+  allowTaint: false,
+  backgroundColor: null,
+  removeContainer: true
+};
+```
+
+## 双重保存功能
+1. **下载到本地**: 自动生成文件名（包含时间戳和比例信息）
+2. **复制到剪贴板**: 使用Clipboard API，需要处理权限问题
+
+## 错误处理要求
+- 跨域内容处理
+- 网络加载失败
+- 权限被拒绝
+- 浏览器兼容性问题
+
+## 性能优化要点
+- 避免重复渲染截图框
+- 合理使用防抖处理用户操作
+- 及时清理DOM元素和事件监听器
+# 截图功能开发规范
+
+## 核心比例要求
+ScreenCut插件专门为内容创作者设计，必须严格支持以下两种比例：
+- **1.75:1** - 博客横幅比例
+- **2.35:1** - 公众号封面比例
+
+## 比例计算核心逻辑
+```javascript
+/**
+ * 核心比例计算规则
+ * 默认宽度400px，根据比例计算对应高度
+ */
+const calculateDimensions = (ratio, width = 400) => {
+  return {
+    width: width,
+    height: Math.round(width / ratio)
+  };
+};
+
+// 1.75:1 → 400x229px
+// 2.35:1 → 400x170px
+```
+
+## 截图框交互要求
+1. **初始状态**: 根据选择比例生成默认尺寸截图框
+2. **拖拽移动**: 点击框内任意位置可移动位置
+3. **等比例缩放**: 拖拽四角控制点进行缩放，严格保持比例
+4. **实时反馈**: 显示当前像素尺寸信息
+5. **边界检测**: 防止截图框超出页面可视区域
+
+## 截图质量标准
+- **格式**: PNG格式，保证透明度支持
+- **分辨率**: 支持高分辨率屏幕(Retina)，考虑devicePixelRatio
+- **最小尺寸**: 不小于100px宽度
+- **最大尺寸**: 不超过页面可视区域
+
+## html2canvas配置要求
+```javascript
+const canvasOptions = {
+  scale: window.devicePixelRatio || 1,
+  useCORS: true,
+  allowTaint: false,
+  backgroundColor: null,
+  removeContainer: true
+};
+```
+
+## 双重保存功能
+1. **下载到本地**: 自动生成文件名（包含时间戳和比例信息）
+2. **复制到剪贴板**: 使用Clipboard API，需要处理权限问题
+
+## 错误处理要求
+- 跨域内容处理
+- 网络加载失败
+- 权限被拒绝
+- 浏览器兼容性问题
+
+## 性能优化要点
+- 避免重复渲染截图框
+- 合理使用防抖处理用户操作
+- 及时清理DOM元素和事件监听器

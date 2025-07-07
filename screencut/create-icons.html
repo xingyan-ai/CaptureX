@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScreenCut 图标下载器</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 { color: #1a1a1a; margin-bottom: 10px; }
+        .subtitle { color: #6b7280; margin-bottom: 30px; }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .icon-item {
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .icon-item:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        .icon-preview {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 10px;
+            background: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .download-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .download-btn:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+        .instructions {
+            background: #f1f5f9;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            text-align: left;
+        }
+        .warning {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 20px 0;
+            color: #92400e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 ScreenCut 图标下载器</h1>
+        <p class="subtitle">下载Chrome扩展所需的图标文件</p>
+        
+        <div class="warning">
+            ⚠️ 下载后请将文件重命名为：icon16.png, icon48.png, icon128.png，并放入 icons/ 目录
+        </div>
+        
+        <div class="icon-grid">
+            <div class="icon-item">
+                <div class="icon-preview" style="width: 16px; height: 16px; font-size: 8px;">SC</div>
+                <h3>16×16</h3>
+                <button class="download-btn" onclick="downloadIcon(16)">下载</button>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview" style="width: 48px; height: 48px; font-size: 24px;">SC</div>
+                <h3>48×48</h3>
+                <button class="download-btn" onclick="downloadIcon(48)">下载</button>
+            </div>
+            
+            <div class="icon-item">
+                <div class="icon-preview" style="width: 64px; height: 64px; font-size: 32px;">SC</div>
+                <h3>128×128</h3>
+                <button class="download-btn" onclick="downloadIcon(128)">下载</button>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h4>📋 使用说明：</h4>
+            <ol>
+                <li>依次点击上方三个"下载"按钮</li>
+                <li>将下载的文件重命名为：
+                    <ul>
+                        <li><code>icon16.png</code></li>
+                        <li><code>icon48.png</code></li>
+                        <li><code>icon128.png</code></li>
+                    </ul>
+                </li>
+                <li>将3个文件移动到项目的 <code>icons/</code> 目录</li>
+                <li>重新在Chrome中加载扩展</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // 蓝色背景
+            ctx.fillStyle = '#3b82f6';
+            ctx.fillRect(0, 0, size, size);
+            
+            // 白色边框矩形
+            const margin = Math.floor(size / 8);
+            const strokeWidth = Math.max(1, Math.floor(size / 20));
+            
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = strokeWidth;
+            ctx.strokeRect(margin, margin, size - 2 * margin, size - 2 * margin);
+            
+            // 中心十字
+            const center = size / 2;
+            const crossSize = size / 8;
+            
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = Math.max(1, Math.floor(size / 40));
+            
+            ctx.beginPath();
+            ctx.moveTo(center - crossSize, center);
+            ctx.lineTo(center + crossSize, center);
+            ctx.moveTo(center, center - crossSize);
+            ctx.lineTo(center, center + crossSize);
+            ctx.stroke();
+            
+            return canvas;
+        }
+        
+        function downloadIcon(size) {
+            const canvas = createIcon(size);
+            
+            // 转换为blob并下载
+            canvas.toBlob(function(blob) {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `screencut-icon-${size}x${size}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/png');
+        }
+    </script>
+</body>
+</html> 

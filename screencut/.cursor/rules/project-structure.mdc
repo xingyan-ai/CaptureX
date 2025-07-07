@@ -1,0 +1,90 @@
+---
+alwaysApply: true
+---
+
+# ScreenCut Chrome插件项目结构指南
+
+## 项目概述
+ScreenCut是一个专为博客和公众号内容创作者设计的Chrome浏览器截图插件，支持1.75:1和2.35:1两种精准比例截图。
+
+## 核心文档
+- [README.md](mdc:README.md) - 项目总览和快速开始指南
+- [产品需求文档.md](mdc:产品需求文档.md) - 完整的功能需求和用户体验设计
+- [开发文档.md](mdc:开发文档.md) - 技术实现方案和开发指南
+
+## 预期目录结构
+```
+screencut-extension/
+├── manifest.json          # Chrome扩展配置文件
+├── popup/                 # 弹窗界面模块
+│   ├── popup.html         # 插件弹窗页面
+│   ├── popup.css          # Linear极简风格样式
+│   └── popup.js           # 弹窗交互逻辑
+├── content/               # 内容脚本模块
+│   ├── content.js         # 页面注入脚本，负责截图框交互
+│   └── overlay.css        # 截图框样式
+├── background/            # 后台脚本
+│   └── background.js      # 扩展后台服务
+├── utils/                 # 工具函数模块
+│   ├── capture.js         # 截图捕获核心功能
+│   └── ratio-calculator.js # 比例计算工具
+└── icons/                 # 图标资源
+    ├── icon16.png
+    ├── icon48.png
+    └── icon128.png
+```
+
+## 设计原则
+- **Linear极简风格**: 简洁线条、柔和圆角、清晰层次
+- **精准比例控制**: 严格保持1.75:1和2.35:1比例
+- **用户友好**: 30秒内完成截图流程
+- **双重保存**: 支持下载和剪贴板两种方式
+
+## 关键技术
+- Chrome Extension Manifest V3
+- Canvas API + html2canvas
+- Vanilla JavaScript (无框架依赖)
+- CSS3 + Linear设计语言
+# ScreenCut Chrome插件项目结构指南
+
+## 项目概述
+ScreenCut是一个专为博客和公众号内容创作者设计的Chrome浏览器截图插件，支持1.75:1和2.35:1两种精准比例截图。
+
+## 核心文档
+- [README.md](mdc:README.md) - 项目总览和快速开始指南
+- [产品需求文档.md](mdc:产品需求文档.md) - 完整的功能需求和用户体验设计
+- [开发文档.md](mdc:开发文档.md) - 技术实现方案和开发指南
+
+## 预期目录结构
+```
+screencut-extension/
+├── manifest.json          # Chrome扩展配置文件
+├── popup/                 # 弹窗界面模块
+│   ├── popup.html         # 插件弹窗页面
+│   ├── popup.css          # Linear极简风格样式
+│   └── popup.js           # 弹窗交互逻辑
+├── content/               # 内容脚本模块
+│   ├── content.js         # 页面注入脚本，负责截图框交互
+│   └── overlay.css        # 截图框样式
+├── background/            # 后台脚本
+│   └── background.js      # 扩展后台服务
+├── utils/                 # 工具函数模块
+│   ├── capture.js         # 截图捕获核心功能
+│   └── ratio-calculator.js # 比例计算工具
+└── icons/                 # 图标资源
+    ├── icon16.png
+    ├── icon48.png
+    └── icon128.png
+```
+
+## 设计原则
+- **Linear极简风格**: 简洁线条、柔和圆角、清晰层次
+- **精准比例控制**: 严格保持1.75:1和2.35:1比例
+- **用户友好**: 30秒内完成截图流程
+- **双重保存**: 支持下载和剪贴板两种方式
+
+## 关键技术
+- Chrome Extension Manifest V3
+- Canvas API + html2canvas
+- Vanilla JavaScript (无框架依赖)
+- CSS3 + Linear设计语言

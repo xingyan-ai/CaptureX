@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>ScreenCut</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">ScreenCut</h1>
+            <p class="subtitle">选择一个截图比例</p>
+        </header>
+
+        <div class="ratio-selector">
+            <button id="ratio-1-75" class="ratio-btn" data-ratio="1.75">
+                <span class="ratio-name">博客横幅</span>
+                <span class="ratio-value">1.75:1</span>
+            </button>
+            <button id="ratio-2-35" class="ratio-btn" data-ratio="2.35">
+                <span class="ratio-name">公众号封面</span>
+                <span class="ratio-value">2.35:1</span>
+            </button>
+        </div>
+
+        <div class="actions">
+            <button id="start-capture" class="btn btn-primary" disabled>开始截图</button>
+            <button id="cancel-capture" class="btn btn-secondary" style="display: none;">取消</button>
+        </div>
+
+        <div id="status-message" class="status-message" style="display: none;">
+            <span class="status-icon">ℹ️</span>
+            <span class="status-text"></span>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>
