@@ -50,13 +50,14 @@ body {
     background-color: var(--bg-secondary-color);
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 12px;
+    padding: 12px 40px 12px 12px; /* Increased right padding for delete button */
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
     transition: background-color 0.2s, border-color 0.2s;
     color: var(--text-color);
+    position: relative;
 }
 
 .ratio-btn:hover {
@@ -78,6 +79,35 @@ body {
     color: var(--text-secondary-color);
 }
 
+.delete-btn {
+    background: rgba(255, 255, 255, 0.1); /* Circular background */
+    border: none;
+    color: var(--text-color); /* Changed to text-color for better contrast */
+    cursor: pointer;
+    font-size: 12px; /* Smaller font size */
+    width: 24px; /* Fixed width for circle */
+    height: 24px; /* Fixed height for circle */
+    border-radius: 50%; /* Make it circular */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+}
+
+.ratio-btn:hover .delete-btn {
+    opacity: 1;
+}
+
+.delete-btn:hover {
+    background: rgba(255, 255, 255, 0.2); /* Hover effect for background */
+    color: #ff4d4d; /* Red color on hover */
+}
+
 .actions {
     display: flex;
     flex-direction: column;
@@ -90,7 +120,10 @@ body {
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: filter 0.2s;
+    transition: filter 0.2s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn:disabled {
@@ -116,6 +149,62 @@ body {
 
 .btn-secondary:hover {
     background-color: #222224;
+}
+
+.new-ratio-controls {
+    margin-top: -8px; /* Reduce gap */
+}
+
+.new-ratio-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px;
+    background-color: var(--bg-secondary-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.new-ratio-form input[type="text"],
+.new-ratio-form input[type="number"] {
+    background-color: #2a2a2c;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-color);
+    padding: 8px 10px;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.new-ratio-form input::placeholder {
+    color: var(--text-secondary-color);
+}
+
+.type-selector {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+}
+
+.dimensions-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dimensions-input span {
+    color: var(--text-secondary-color);
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.form-actions .btn {
+    flex: 1;
 }
 
 .status-message {

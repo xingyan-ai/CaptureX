@@ -34,6 +34,7 @@
 .screencut-shroud {
     position: absolute;
     background-color: rgba(17, 17, 19, 0.7);
+    pointer-events: auto; /* Ensure shrouds are visible and can receive events */
 }
 
 /* --- Correct Shroud Positioning --- */
@@ -102,17 +103,21 @@
 
 .screencut-toolbar, .screencut-info {
     position: absolute;
+    font-size: 13px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    pointer-events: all;
+    user-select: none;
+    transition: opacity 0.2s ease-in-out; /* Fade in/out */
+    z-index: 2147483647; /* Ensure it's above the frame */
+}
+
+.screencut-toolbar {
     background-color: #1a1a1c; /* Dark, slightly transparent background */
     color: #e4e4e6; /* Light text */
     border: 1px solid rgba(255, 255, 255, 0.08); /* Subtle border */
     border-radius: 8px; /* Rounded corners */
     padding: 6px 8px;
-    font-size: 13px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    pointer-events: all;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); /* Deeper shadow for depth */
-    user-select: none;
-    transition: opacity 0.2s ease-in-out; /* Fade in/out */
 }
 
 .screencut-toolbar {
