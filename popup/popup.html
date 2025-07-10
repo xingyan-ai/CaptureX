@@ -18,19 +18,6 @@
             </button>
         </div>
 
-        <div class="ratio-selector">
-            <button class="ratio-btn" data-type="ratio" data-ratio="1.75" data-width="7" data-height="4">
-                <span class="ratio-name">博客封面</span>
-                <span class="ratio-value">1.75:1</span>
-            </button>
-            <button class="ratio-btn" data-type="ratio" data-ratio="2.35" data-width="47" data-height="20">
-                <span class="ratio-name">公众号封面</span>
-                <span class="ratio-value">2.35:1</span>
-            </button>
-        </div>
-
-        <div id="custom-ratio-container" class="ratio-selector"></div>
-
         <form id="new-ratio-form" class="new-ratio-form" style="display: none;">
             <input type="text" id="new-ratio-name" placeholder="名称 (例如: 博客配图)" required>
             
@@ -56,6 +43,18 @@
                 <button type="button" id="cancel-new-ratio-btn" class="btn btn-secondary">取消</button>
             </div>
         </form>
+
+        <div class="ratio-selector">
+            <button class="ratio-btn" data-type="ratio" data-ratio="1.75" data-width="7" data-height="4">
+                <span class="ratio-name">博客封面</span>
+                <span class="ratio-value">1.75:1</span>
+            </button>
+            <button class="ratio-btn" data-type="ratio" data-ratio="2.35" data-width="47" data-height="20">
+                <span class="ratio-name">公众号封面</span>
+                <span class="ratio-value">2.35:1</span>
+            </button>
+            <div id="custom-ratio-container"></div>
+        </div>
 
         <div class="actions">
             <button id="start-capture" class="btn btn-primary" disabled>开始截图</button>
