@@ -101,6 +101,10 @@ class ScreenCutManager {
 
         const width = document.documentElement.scrollWidth;
         const height = document.documentElement.scrollHeight;
+        
+        const originalScrollX = window.scrollX;
+        const originalScrollY = window.scrollY;
+        window.scrollTo(0, 0);
         // --- End of new implementation ---
 
         try {
@@ -108,8 +112,8 @@ class ScreenCutManager {
                 useCORS: true,
                 allowTaint: true,
                 logging: true,
-                scrollX: -window.scrollX,
-                scrollY: -window.scrollY,
+                scrollX: 0,
+                scrollY: 0,
                 windowWidth: document.documentElement.scrollWidth,
                 windowHeight: document.documentElement.scrollHeight,
                 backgroundColor: '#ffffff',
@@ -133,6 +137,7 @@ class ScreenCutManager {
             cleanupGradientText();
             // --- Start of new implementation ---
             document.body.style.userSelect = originalUserSelect;
+            window.scrollTo(originalScrollX, originalScrollY);
             // --- End of new implementation ---
         }
     }
