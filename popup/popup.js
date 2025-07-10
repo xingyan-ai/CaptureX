@@ -276,6 +276,29 @@ async function startCapture() {
     }
 }
 
+async function captureFullPage() {
+    showStatusMessage('正在准备截取全屏...', 'info', null); // Show indefinite message
+    try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!tab || !tab.id) throw new Error('无法获取当前标签页');
+
+        // Send message to background script to orchestrate the capture
+        const response = await chrome.runtime.sendMessage({
+            action: 'initiateFullPageCapture',
+            tabId: tab.id
+        });
+
+        if (!response || !response.success) {
+            throw new Error(response?.error || '启动全屏截图失败');
+        }
+        // The popup will be updated by messages from the content/background script
+
+    } catch (error) {
+        console.error('启动全屏截图失败:', error);
+        showStatusMessage(`启动失败: ${error.message}`, 'error');
+    }
+}
+
 function cancelCapture() {
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
         if (tab) chrome.tabs.sendMessage(tab.id, { action: 'cancelCapture' });
@@ -313,6 +336,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pixelHeight: document.getElementById('pixel-height'),
         cancelNewRatioBtn: document.getElementById('cancel-new-ratio-btn'),
         startCaptureBtn: document.getElementById('start-capture'),
+        captureFullPageBtn: document.getElementById('capture-full-page'),
         cancelCaptureBtn: document.getElementById('cancel-capture'),
         statusMessage: document.getElementById('status-message'),
         statusText: document.querySelector('.status-text'),
@@ -335,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     elements.startCaptureBtn.addEventListener('click', startCapture);
+    elements.captureFullPageBtn.addEventListener('click', captureFullPage);
     elements.cancelCaptureBtn.addEventListener('click', cancelCapture);
 
     loadCustomRatios();

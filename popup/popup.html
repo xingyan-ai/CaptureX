@@ -12,6 +12,12 @@
             <p class="subtitle">选择一个截图尺寸</p>
         </header>
 
+        <div class="new-ratio-controls">
+            <button id="add-new-ratio-btn" class="btn btn-secondary">
+                <span>+</span>&nbsp;新建尺寸
+            </button>
+        </div>
+
         <div class="ratio-selector">
             <button class="ratio-btn" data-type="ratio" data-ratio="1.75" data-width="7" data-height="4">
                 <span class="ratio-name">博客封面</span>
@@ -21,16 +27,9 @@
                 <span class="ratio-name">公众号封面</span>
                 <span class="ratio-value">2.35:1</span>
             </button>
-            
         </div>
 
         <div id="custom-ratio-container" class="ratio-selector"></div>
-
-        <div class="new-ratio-controls">
-            <button id="add-new-ratio-btn" class="btn btn-secondary">
-                <span>+</span>&nbsp;新建尺寸
-            </button>
-        </div>
 
         <form id="new-ratio-form" class="new-ratio-form" style="display: none;">
             <input type="text" id="new-ratio-name" placeholder="名称 (例如: 博客配图)" required>
@@ -61,6 +60,12 @@
         <div class="actions">
             <button id="start-capture" class="btn btn-primary" disabled>开始截图</button>
             <button id="cancel-capture" class="btn btn-secondary" style="display: none;">取消</button>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="secondary-actions">
+            <button id="capture-full-page" class="btn btn-secondary-action">一键截全屏</button>
         </div>
 
         <div id="status-message" class="status-message" style="display: none;">

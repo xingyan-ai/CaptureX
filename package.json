@@ -1,0 +1,27 @@
+{
+  "name": "capturex",
+  "version": "1.0.0",
+  "description": "一款为您量身定制的自定义截图工具，专为内容创作者、设计师和产品经理打造，提供专业、高效、美观的截图体验。",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xingyan-ai/CaptureX.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xingyan-ai/CaptureX/issues"
+  },
+  "homepage": "https://github.com/xingyan-ai/CaptureX#readme",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "puppeteer": "^24.12.0"
+  }
+}

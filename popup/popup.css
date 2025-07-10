@@ -26,24 +26,27 @@ body {
 
 .header {
     text-align: center;
+    margin-bottom: 16px;
 }
 
 .title {
     font-size: 18px;
     font-weight: 600;
-    margin: 0;
+    color: var(--text-color);
+    margin-bottom: 4px;
 }
 
 .subtitle {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--text-secondary-color);
-    margin: 4px 0 0;
+    margin: 0;
 }
 
 .ratio-selector {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 16px;
 }
 
 .ratio-btn {
@@ -111,6 +114,8 @@ body {
 .actions {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
 }
 
 .btn {
@@ -152,7 +157,68 @@ body {
 }
 
 .new-ratio-controls {
-    margin-top: -8px; /* Reduce gap */
+    margin-bottom: 16px;
+}
+
+.new-ratio-controls .btn {
+    background-color: transparent;
+    color: var(--text-secondary-color);
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    min-height: 44px; /* 与ratio-btn高度一致 */
+    box-sizing: border-box;
+}
+
+.new-ratio-controls .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.02);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.new-ratio-controls .btn:hover::before {
+    opacity: 1;
+}
+
+.new-ratio-controls .btn:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+}
+
+.new-ratio-controls .btn span:first-child {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    color: var(--text-color);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    transition: all 0.2s ease;
+}
+
+.new-ratio-controls .btn:hover span:first-child {
+    background-color: rgba(255, 255, 255, 0.12);
+    transform: scale(1.05);
 }
 
 .new-ratio-form {
@@ -163,6 +229,7 @@ body {
     background-color: var(--bg-secondary-color);
     border-radius: 8px;
     border: 1px solid var(--border-color);
+    margin-bottom: 16px;
 }
 
 .new-ratio-form input[type="text"],
@@ -228,4 +295,49 @@ body {
 
 .status-message.error {
     border-color: #ef4444; /* Red border for error */
+}
+
+/* 分隔线样式 */
+.divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.1);
+    margin: 8px 0;
+}
+
+/* 次要操作区域 */
+.secondary-actions {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+/* 次要按钮样式 */
+.btn-secondary-action {
+    background-color: transparent;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 500; /* 稍微轻一点的字重 */
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-secondary-action:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--text-color);
+}
+
+/* 自定义比例容器 */
+#custom-ratio-container {
+    margin-bottom: 0;
+}
+
+#custom-ratio-container:not(:empty) {
+    margin-bottom: 16px;
 }

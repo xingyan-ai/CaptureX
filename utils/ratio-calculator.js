@@ -307,14 +307,15 @@ function calculateScaleFactor(fromDimensions, toDimensions) {
  * @param {number} pixelRatio - 设备像素比 (默认使用当前设备的)
  * @returns {Object} 物理像素尺寸对象
  */
-function adjustForPixelRatio(dimensions, pixelRatio = window.devicePixelRatio || 1) {
+function adjustForPixelRatio(dimensions, pixelRatio) {
+  const dpr = pixelRatio || (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
   return {
     logical: dimensions,
     physical: {
-      width: Math.round(dimensions.width * pixelRatio),
-      height: Math.round(dimensions.height * pixelRatio)
+      width: Math.round(dimensions.width * dpr),
+      height: Math.round(dimensions.height * dpr)
     },
-    pixelRatio
+    pixelRatio: dpr
   };
 }
 
@@ -322,28 +323,22 @@ function adjustForPixelRatio(dimensions, pixelRatio = window.devicePixelRatio ||
 // 导出接口
 // ============================================================================
 
-// 将工具函数添加到全局作用域
-window.ScreenCutRatio = {
-  // 核心计算函数
-  calculateHeight,
-  calculateWidth,
-  getDefaultDimensions,
-  validateDimensions,
-  getCorrectedDimensions,
-  
-  // 缩放功能
-  scaleProportionally,
-  fitToContainer,
-  calculateScaleFactor,
-  
-  // 工具函数
-  isValidRatio,
-  getRatioConfig,
-  getSupportedRatios,
-  formatRatio,
-  adjustForPixelRatio,
-  
-  // 常量
-  RATIO_CONFIGS,
-  SIZE_LIMITS
-}; 
+if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+  module.exports = {
+    calculateHeight,
+    calculateWidth,
+    getDefaultDimensions,
+    validateDimensions,
+    getCorrectedDimensions,
+    scaleProportionally,
+    fitToContainer,
+    calculateScaleFactor,
+    isValidRatio,
+    getRatioConfig,
+    getSupportedRatios,
+    formatRatio,
+    adjustForPixelRatio,
+    RATIO_CONFIGS,
+    SIZE_LIMITS
+  };
+} 
