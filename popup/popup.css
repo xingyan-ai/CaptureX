@@ -26,7 +26,7 @@ body {
 
 .header {
     text-align: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px; /* 稍微减少与操作按钮的间距 */
 }
 
 .title {
@@ -40,6 +40,157 @@ body {
     font-size: 14px;
     color: var(--text-secondary-color);
     margin: 0;
+}
+
+/* 操作按钮区域 */
+.header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 0 4px; /* 为了确保左右间距一致 */
+}
+
+.btn-icon {
+    width: 28px; /* 稍小一点更精致 */
+    height: 28px;
+    border-radius: 6px; /* Linear风格的圆角 */
+    background-color: rgba(255, 255, 255, 0.06); /* 更微妙的背景 */
+    border: 1px solid rgba(255, 255, 255, 0.08); /* 添加细边框 */
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease; /* 更平滑的过渡 */
+    position: relative;
+}
+
+.btn-icon:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px); /* 微妙的上移效果 */
+}
+
+.btn-icon svg {
+    color: var(--text-secondary-color);
+    transition: color 0.2s ease;
+}
+
+.btn-icon:hover svg {
+    color: var(--text-color);
+}
+
+/* Tooltip样式 */
+.btn-icon::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+}
+
+.btn-icon:hover::after {
+    opacity: 1;
+}
+
+/* 带文字的图标按钮 */
+.btn-text-icon {
+    display: flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 12px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: var(--text-color);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-text-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+.btn-text-icon .plus-icon {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+/* Settings Panel Styles */
+.settings-panel {
+    padding: 12px;
+    background-color: var(--bg-secondary-color);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px; /* 添加底部间距 */
+}
+
+.settings-panel h2 {
+    font-size: 16px;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.settings-section h3 {
+    font-size: 14px;
+    color: var(--text-secondary-color);
+    margin: 0 0 8px 0;
+    font-weight: 500;
+}
+
+#shortcuts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#shortcuts-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+}
+
+#shortcuts-list kbd {
+    font-family: var(--font-family);
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.manage-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 13px;
+    margin-top: 12px;
+    display: inline-block;
+}
+
+.manage-link:hover {
+    text-decoration: underline;
 }
 
 .ratio-selector {

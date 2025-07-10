@@ -25,9 +25,41 @@
     }
   },
   
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+X",
+        "mac": "Command+Shift+X"
+      },
+      "description": "打开 CaptureX 插件"
+    },
+    "capture_fullscreen": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "一键截全屏"
+    },
+    "start_capture": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "开始截图 (使用上次选择的尺寸)"
+    }
+  },
+
   "background": {
     "service_worker": "background/background.js"
   },
+
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"],
+      "run_at": "document_end"
+    }
+  ],
   
   "icons": {
     "16": "icons/icon16.png",

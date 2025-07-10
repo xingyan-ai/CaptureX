@@ -1,56 +1,155 @@
 /**
- * ScreenCut Popup 交互逻辑
- * 负责处理用户界面交互、尺寸选择、自定义尺寸管理、消息通信和状态管理
+ * CaptureX Popup Interaction Logic
+ * Manages UI, state, custom sizes, settings, and message passing.
  */
 
 // ============================================================================
-// 全局变量和状态管理
+// Global State & DOM Elements
 // ============================================================================
 
-let selectedConfig = null; // { type, ratio, width, height }
+let selectedConfig = null;
 let isCapturing = false;
 let customRatios = [];
-
-// DOM 元素引用
 const elements = {};
 
 // ============================================================================
-// 工具函数 & 存储
+// Storage Utility
 // ============================================================================
 
 const storage = {
-    get: () => chrome.storage.sync.get({ customRatios: [] }),
+    get: (keys) => chrome.storage.sync.get(keys),
     set: (data) => chrome.storage.sync.set(data),
 };
 
-function showStatusMessage(message, type = 'info', duration = 3000) {
-    const { statusMessage, statusText, statusIcon } = elements;
-    statusMessage.classList.remove('success', 'error', 'info');
-    statusText.textContent = message;
-    statusMessage.classList.add(type);
+// ============================================================================
+// Initialization
+// ============================================================================
 
-    switch (type) {
-        case 'success': statusIcon.textContent = '✅'; break;
-        case 'error': statusIcon.textContent = '❌'; break;
-        default: statusIcon.textContent = 'ℹ️'; break;
-    }
+document.addEventListener('DOMContentLoaded', () => {
+    assignDOMElements();
+    loadDataFromStorage();
+    attachEventListeners();
+    handleFormTypeChange();
+});
 
-    statusMessage.style.display = 'flex';
+function assignDOMElements() {
+    Object.assign(elements, {
+        // Main containers
+        ratioSelector: document.querySelector('.ratio-selector'),
+        customRatioContainer: document.getElementById('custom-ratio-container'),
+        // Buttons
+        addNewRatioBtn: document.getElementById('add-new-ratio-btn'),
+        settingsBtn: document.getElementById('settings-btn'),
+        startCaptureBtn: document.getElementById('start-capture'),
+        captureFullPageBtn: document.getElementById('capture-full-page'),
+        cancelCaptureBtn: document.getElementById('cancel-capture'),
+        cancelNewRatioBtn: document.getElementById('cancel-new-ratio-btn'),
+        // Forms & Panels
+        newRatioForm: document.getElementById('new-ratio-form'),
+        settingsPanel: document.getElementById('settings-panel'),
+        // Form inputs
+        newRatioName: document.getElementById('new-ratio-name'),
+        dimensionsRatio: document.getElementById('dimensions-ratio'),
+        dimensionsPixels: document.getElementById('dimensions-pixels'),
+        ratioWidth: document.getElementById('ratio-width'),
+        ratioHeight: document.getElementById('ratio-height'),
+        pixelWidth: document.getElementById('pixel-width'),
+        pixelHeight: document.getElementById('pixel-height'),
+        // Settings
+        shortcutsList: document.getElementById('shortcuts-list'),
+        manageShortcutsLink: document.getElementById('manage-shortcuts-link'),
+        // Status
+        statusMessage: document.getElementById('status-message'),
+        statusText: document.querySelector('.status-text'),
+        statusIcon: document.querySelector('.status-icon'),
+    });
+}
 
-    if (duration) {
-        setTimeout(() => statusMessage.style.display = 'none', duration);
-    }
+function loadDataFromStorage() {
+    storage.get({ customRatios: [], selectedConfig: null }).then(data => {
+        customRatios = data.customRatios || [];
+        selectedConfig = data.selectedConfig;
+        renderCustomRatios();
+        if (selectedConfig) {
+            // Highlight the previously selected ratio if it exists
+            // This is a simple check; a more robust version might use an ID
+            document.querySelectorAll('.ratio-btn').forEach(btn => {
+                if (btn.querySelector('.ratio-name').textContent === selectedConfig.name) {
+                    btn.classList.add('selected');
+                    elements.startCaptureBtn.disabled = false;
+                }
+            });
+        }
+    });
+    loadShortcuts();
+}
+
+function attachEventListeners() {
+    elements.ratioSelector.addEventListener('click', (e) => {
+        const button = e.target.closest('.ratio-btn');
+        if (button) selectRatio(button);
+    });
+
+    elements.addNewRatioBtn.addEventListener('click', () => toggleNewRatioForm(true));
+    elements.cancelNewRatioBtn.addEventListener('click', () => toggleNewRatioForm(false));
+    elements.newRatioForm.addEventListener('submit', handleFormSubmit);
+    elements.newRatioForm.querySelectorAll('[name="ratio-type"]').forEach(radio => {
+        radio.addEventListener('change', handleFormTypeChange);
+    });
+
+    elements.settingsBtn.addEventListener('click', () => toggleSettingsPanel());
+    elements.manageShortcutsLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+    });
+
+    elements.startCaptureBtn.addEventListener('click', startCapture);
+    elements.captureFullPageBtn.addEventListener('click', captureFullPage);
+    elements.cancelCaptureBtn.addEventListener('click', cancelCapture);
 }
 
 // ============================================================================
-// 自定义尺寸管理
+// UI Panels & Toggles
 // ============================================================================
 
-async function loadCustomRatios() {
-    const data = await storage.get();
-    customRatios = data.customRatios || [];
-    renderCustomRatios();
+function toggleNewRatioForm(show) {
+    elements.newRatioForm.style.display = show ? 'flex' : 'none';
+    if (show) toggleSettingsPanel(false); // Hide settings if showing form
 }
+
+function toggleSettingsPanel(forceState) {
+    const shouldShow = forceState !== undefined ? forceState : elements.settingsPanel.style.display === 'none';
+    elements.settingsPanel.style.display = shouldShow ? 'block' : 'none';
+    if (shouldShow) toggleNewRatioForm(false); // Hide form if showing settings
+}
+
+// ============================================================================
+// Settings & Shortcuts
+// ============================================================================
+
+async function loadShortcuts() {
+    const commands = await chrome.commands.getAll();
+    const commandMap = {
+        '_execute_action': '打开插件面板',
+        'capture_fullscreen': '一键截全屏',
+        'start_capture': '开始截图',
+    };
+
+    elements.shortcutsList.innerHTML = '';
+    commands.forEach(command => {
+        const name = commandMap[command.name];
+        if (name) {
+            const li = document.createElement('li');
+            const shortcut = command.shortcut || '未设置';
+            li.innerHTML = `<span>${name}</span><kbd>${shortcut}</kbd>`;
+            elements.shortcutsList.appendChild(li);
+        }
+    });
+}
+
+// ============================================================================
+// Custom Ratio Management
+// ============================================================================
 
 function renderCustomRatios() {
     elements.customRatioContainer.innerHTML = '';
@@ -90,7 +189,6 @@ function createRatioButton(config, index) {
             selectRatio(btn);
         }
     });
-
     return btn;
 }
 
@@ -113,78 +211,40 @@ async function deleteCustomRatio(index) {
 
 function resetSelection() {
     selectedConfig = null;
+    storage.set({ selectedConfig: null });
     document.querySelectorAll('.ratio-btn.selected').forEach(b => b.classList.remove('selected'));
     elements.startCaptureBtn.disabled = true;
 }
 
-// ============================================================================
-// UI 交互
-// ============================================================================
-
-/**
- * [核心修复] 更健壮的尺寸选择函数
- * 每次都创建一个全新的、经过严格校验的配置对象，防止状态污染。
- */
 function selectRatio(btn) {
-    console.log('[Popup] Selecting button:', btn.outerHTML);
-    console.log('[Popup] Button dataset:', btn.dataset);
-    
     document.querySelectorAll('.ratio-btn.selected').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
 
     const { type, ratio, width, height, index } = btn.dataset;
-    let newConfig = null; // 1. 从 null 开始，确保纯净
+    let newConfig = null;
 
-    // 2. 根据类型，严格校验并创建对象
     if (type === 'ratio') {
         const ratioValue = parseFloat(ratio);
-        console.log('[Popup] Processing ratio button, ratioValue:', ratioValue);
         if (!isNaN(ratioValue) && ratioValue > 0) {
-            newConfig = {
-                type: 'ratio',
-                name: btn.querySelector('.ratio-name').textContent,
-                ratio: ratioValue,
-                index: index ? parseInt(index, 10) : null
-            };
+            newConfig = { type: 'ratio', name: btn.querySelector('.ratio-name').textContent, ratio: ratioValue, index: index ? parseInt(index, 10) : null };
         }
     } else if (type === 'pixels') {
         const widthValue = parseInt(width, 10);
         const heightValue = parseInt(height, 10);
-        console.log('[Popup] Processing pixels button, width:', widthValue, 'height:', heightValue);
-        console.log('[Popup] Button width/height from dataset:', width, height);
-        
         if (!isNaN(widthValue) && widthValue > 0 && !isNaN(heightValue) && heightValue > 0) {
-            newConfig = {
-                type: 'pixels',
-                name: btn.querySelector('.ratio-name').textContent,
-                width: widthValue,
-                height: heightValue,
-                index: index ? parseInt(index, 10) : null
-            };
-            console.log('[Popup] Created pixels config:', newConfig);
-        } else {
-            console.error('[Popup] Invalid pixels values:', { width, height, widthValue, heightValue });
+            newConfig = { type: 'pixels', name: btn.querySelector('.ratio-name').textContent, width: widthValue, height: heightValue, index: index ? parseInt(index, 10) : null };
         }
     }
 
-    // 3. 只有在对象完全有效时才更新状态
     if (newConfig) {
         selectedConfig = newConfig;
-        console.log('[Popup] Successfully generated config:', JSON.parse(JSON.stringify(selectedConfig)));
+        storage.set({ selectedConfig: newConfig }); // Save for shortcut use
         elements.startCaptureBtn.disabled = false;
         showStatusMessage(`已选择: ${selectedConfig.name}`);
     } else {
-        selectedConfig = null;
-        console.error('[Popup] Failed to generate a valid config from button dataset:', btn.dataset);
-        elements.startCaptureBtn.disabled = true;
+        resetSelection();
         showStatusMessage('选择的尺寸数据无效', 'error');
     }
-}
-
-
-function toggleNewRatioForm(show = true) {
-    elements.newRatioForm.style.display = show ? 'flex' : 'none';
-    elements.addNewRatioBtn.style.display = show ? 'none' : 'flex';
 }
 
 function handleFormTypeChange() {
@@ -196,10 +256,7 @@ function handleFormTypeChange() {
 function handleFormSubmit(e) {
     e.preventDefault();
     const name = elements.newRatioName.value.trim();
-    if (!name) {
-        showStatusMessage('请输入名称', 'error');
-        return;
-    }
+    if (!name) return showStatusMessage('请输入名称', 'error');
 
     const type = elements.newRatioForm.querySelector('[name="ratio-type"]:checked').value;
     let config = { name, type };
@@ -207,21 +264,13 @@ function handleFormSubmit(e) {
     if (type === 'ratio') {
         const width = parseInt(elements.ratioWidth.value, 10);
         const height = parseInt(elements.ratioHeight.value, 10);
-        if (!width || !height || width <= 0 || height <= 0) {
-            showStatusMessage('请输入有效的比例值', 'error');
-            return;
-        }
-        config.width = width;
-        config.height = height;
+        if (!width || !height || width <= 0 || height <= 0) return showStatusMessage('请输入有效的比例值', 'error');
+        config.width = width; config.height = height;
     } else {
         const width = parseInt(elements.pixelWidth.value, 10);
         const height = parseInt(elements.pixelHeight.value, 10);
-        if (!width || !height || width <= 0 || height <= 0) {
-            showStatusMessage('请输入有效的像素值', 'error');
-            return;
-        }
-        config.width = width;
-        config.height = height;
+        if (!width || !height || width <= 0 || height <= 0) return showStatusMessage('请输入有效的像素值', 'error');
+        config.width = width; config.height = height;
     }
 
     saveCustomRatio(config);
@@ -231,70 +280,43 @@ function handleFormSubmit(e) {
 }
 
 // ============================================================================
-// 截图功能
+// Capture Actions
 // ============================================================================
 
 async function startCapture() {
-    if (!selectedConfig) {
-        showStatusMessage('请先选择一个尺寸', 'error');
-        return;
-    }
-
-    console.log('[Popup] Starting capture with config:', selectedConfig);
-
+    if (!selectedConfig) return showStatusMessage('请先选择一个尺寸', 'error');
+    isCapturing = true;
+    updateUICapturingState(true);
     try {
-        isCapturing = true;
-        updateUICapturingState(true);
-
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab || !tab.id) throw new Error('无法获取当前标签页');
-
-        console.log('[Popup] Current tab:', tab.id, tab.url);
-
-        const messageToSend = {
-            action: 'activateCapture',
-            data: { config: selectedConfig, tabId: tab.id }
-        };
         
-        console.log('[Popup] Sending message to background:', messageToSend);
-
-        const response = await chrome.runtime.sendMessage(messageToSend);
+        console.log('Popup: Sending capture request for tab:', tab.id, 'config:', selectedConfig);
+        const response = await chrome.runtime.sendMessage({ action: 'activateCapture', data: { config: selectedConfig, tabId: tab.id } });
+        console.log('Popup: Received response:', response);
         
-        console.log('[Popup] Response from background:', response);
-
         if (!response || !response.success) {
-            throw new Error(response?.error || '启动截图失败');
+            const errorMsg = response?.error || '启动截图失败';
+            throw new Error(errorMsg);
         }
-        
-        showStatusMessage('截图已激活，请在页面上操作', 'success');
-        // Don't close the popup, allow user to see status
-        // window.close(); 
+        showStatusMessage('截图已激活', 'success');
+        // Close popup after successful activation
+        setTimeout(() => window.close(), 500);
     } catch (error) {
-        console.error('启动截图失败:', error);
+        console.error('Popup: Capture failed:', error);
         showStatusMessage(`启动失败: ${error.message}`, 'error');
         resetCaptureState();
     }
 }
 
 async function captureFullPage() {
-    showStatusMessage('正在准备截取全屏...', 'info', null); // Show indefinite message
+    showStatusMessage('正在准备截取全屏...', 'info', null);
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab || !tab.id) throw new Error('无法获取当前标签页');
-
-        // Send message to background script to orchestrate the capture
-        const response = await chrome.runtime.sendMessage({
-            action: 'initiateFullPageCapture',
-            tabId: tab.id
-        });
-
-        if (!response || !response.success) {
-            throw new Error(response?.error || '启动全屏截图失败');
-        }
-        // The popup will be updated by messages from the content/background script
-
+        const response = await chrome.runtime.sendMessage({ action: 'initiateFullPageCapture', tabId: tab.id });
+        if (!response || !response.success) throw new Error(response?.error || '启动全屏截图失败');
     } catch (error) {
-        console.error('启动全屏截图失败:', error);
         showStatusMessage(`启动失败: ${error.message}`, 'error');
     }
 }
@@ -318,74 +340,13 @@ function updateUICapturingState(isCapturing) {
 }
 
 // ============================================================================
-// 初始化和事件绑定
-// ============================================================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    Object.assign(elements, {
-        ratioSelector: document.querySelector('.ratio-selector'),
-        customRatioContainer: document.getElementById('custom-ratio-container'),
-        addNewRatioBtn: document.getElementById('add-new-ratio-btn'),
-        newRatioForm: document.getElementById('new-ratio-form'),
-        newRatioName: document.getElementById('new-ratio-name'),
-        dimensionsRatio: document.getElementById('dimensions-ratio'),
-        dimensionsPixels: document.getElementById('dimensions-pixels'),
-        ratioWidth: document.getElementById('ratio-width'),
-        ratioHeight: document.getElementById('ratio-height'),
-        pixelWidth: document.getElementById('pixel-width'),
-        pixelHeight: document.getElementById('pixel-height'),
-        cancelNewRatioBtn: document.getElementById('cancel-new-ratio-btn'),
-        startCaptureBtn: document.getElementById('start-capture'),
-        captureFullPageBtn: document.getElementById('capture-full-page'),
-        cancelCaptureBtn: document.getElementById('cancel-capture'),
-        statusMessage: document.getElementById('status-message'),
-        statusText: document.querySelector('.status-text'),
-        statusIcon: document.querySelector('.status-icon'),
-    });
-
-    // IMPORTANT: Attach listener to the parent, but call selectRatio on the button itself
-    elements.ratioSelector.addEventListener('click', (e) => {
-        const button = e.target.closest('.ratio-btn');
-        if (button) {
-            selectRatio(button);
-        }
-    });
-
-    elements.addNewRatioBtn.addEventListener('click', () => toggleNewRatioForm(true));
-    elements.cancelNewRatioBtn.addEventListener('click', () => toggleNewRatioForm(false));
-    elements.newRatioForm.addEventListener('submit', handleFormSubmit);
-    elements.newRatioForm.querySelectorAll('[name="ratio-type"]').forEach(radio => {
-        radio.addEventListener('change', handleFormTypeChange);
-    });
-
-    elements.startCaptureBtn.addEventListener('click', startCapture);
-    elements.captureFullPageBtn.addEventListener('click', captureFullPage);
-    elements.cancelCaptureBtn.addEventListener('click', cancelCapture);
-
-    loadCustomRatios();
-    handleFormTypeChange();
-});
-
-// ============================================================================
-// 消息监听器
+// Message Listener
 // ============================================================================
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log('[Popup] Received runtime message:', message);
-    
     switch (message.action) {
         case 'captureComplete':
-            if (message.success) {
-                if (message.filename) {
-                    showStatusMessage(`截图已保存: ${message.filename}`, 'success');
-                } else if (message.copied) {
-                    showStatusMessage('截图已复制到剪贴板', 'success');
-                } else {
-                    showStatusMessage('截图完成', 'success');
-                }
-            } else {
-                showStatusMessage('截图失败', 'error');
-            }
+            showStatusMessage(message.success ? '截图完成' : '截图失败', message.success ? 'success' : 'error');
             resetCaptureState();
             break;
         case 'captureCancelled':
@@ -396,8 +357,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             showStatusMessage(`截图失败: ${message.error}`, 'error');
             resetCaptureState();
             break;
-        default:
-            console.log('[Popup] Unknown message action:', message.action);
     }
     sendResponse({ success: true });
 });
+
+// ============================================================================
+// Utility Functions
+// ============================================================================
+
+function showStatusMessage(message, type = 'info', duration = 3000) {
+    const { statusMessage, statusText, statusIcon } = elements;
+    statusMessage.classList.remove('success', 'error', 'info');
+    statusText.textContent = message;
+    statusMessage.classList.add(type);
+    statusIcon.textContent = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    statusMessage.style.display = 'flex';
+    if (duration) {
+        setTimeout(() => statusMessage.style.display = 'none', duration);
+    }
+}

@@ -12,10 +12,27 @@
             <p class="subtitle">选择一个截图尺寸</p>
         </header>
 
-        <div class="new-ratio-controls">
-            <button id="add-new-ratio-btn" class="btn btn-secondary">
-                <span>+</span>&nbsp;新建尺寸
+        <div class="header-actions">
+            <button id="add-new-ratio-btn" class="btn-text-icon">
+                <span class="plus-icon">+</span>&nbsp;新建尺寸
             </button>
+            <button id="settings-btn" class="btn-icon" title="设置">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.07 4.93a10 10 0 0 0 0 14.14M16.24 7.76a6 6 0 0 0 0 8.49m-8.48 0a6 6 0 0 0 0-8.49M4.93 4.93a10 10 0 0 0 0 14.14"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div id="settings-panel" class="settings-panel" style="display: none;">
+            <h2>设置</h2>
+            <div class="settings-section">
+                <h3>快捷键</h3>
+                <ul id="shortcuts-list">
+                    <!-- Dynamically populated -->
+                </ul>
+                <a href="#" id="manage-shortcuts-link" class="manage-link">管理快捷键</a>
+            </div>
         </div>
 
         <form id="new-ratio-form" class="new-ratio-form" style="display: none;">
