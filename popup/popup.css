@@ -1,12 +1,27 @@
 :root {
-    --bg-color: #111113;
+    --bg-color: #0d0d0f;
     --bg-secondary-color: #1a1a1c;
+    --bg-tertiary-color: #2a2a2c;
     --text-color: #e4e4e6;
     --text-secondary-color: #8a8a8e;
+    --text-muted-color: #6a6a6e;
     --primary-color: #5e6ad2;
+    --primary-hover-color: #6b77db;
     --border-color: rgba(255, 255, 255, 0.08);
+    --border-hover-color: rgba(255, 255, 255, 0.15);
     --shadow-color: rgba(0, 0, 0, 0.5);
+    --shadow-light: rgba(0, 0, 0, 0.2);
+    --success-color: #22c55e;
+    --error-color: #ef4444;
+    --warning-color: #f59e0b;
     --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --border-radius: 8px;
+    --border-radius-sm: 6px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 20px;
 }
 
 body {
@@ -14,32 +29,38 @@ body {
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
-    width: 280px;
+    width: 300px;
+    overflow: hidden;
 }
 
 .container {
-    padding: 16px;
+    padding: var(--spacing-lg);
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: var(--spacing-lg);
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 .header {
     text-align: center;
-    margin-bottom: 8px; /* 稍微减少与操作按钮的间距 */
+    margin-bottom: var(--spacing-sm);
 }
 
 .title {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: 20px;
+    font-weight: 650;
     color: var(--text-color);
-    margin-bottom: 4px;
+    margin: 0 0 var(--spacing-xs) 0;
+    letter-spacing: -0.02em;
 }
 
 .subtitle {
-    font-size: 14px;
-    color: var(--text-secondary-color);
+    font-size: 13px;
+    color: var(--text-muted-color);
     margin: 0;
+    font-weight: 400;
+    line-height: 1.4;
 }
 
 /* 操作按钮区域 */
@@ -47,38 +68,41 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    padding: 0 4px; /* 为了确保左右间距一致 */
+    margin-bottom: var(--spacing-md);
+    padding: 0;
 }
 
 .btn-icon {
-    width: 28px; /* 稍小一点更精致 */
-    height: 28px;
-    border-radius: 6px; /* Linear风格的圆角 */
-    background-color: rgba(255, 255, 255, 0.06); /* 更微妙的背景 */
-    border: 1px solid rgba(255, 255, 255, 0.08); /* 添加细边框 */
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    background-color: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
     color: var(--text-color);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s ease; /* 更平滑的过渡 */
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
+    backdrop-filter: blur(10px);
 }
 
 .btn-icon:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px); /* 微妙的上移效果 */
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-hover-color);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 12px var(--shadow-light);
 }
 
 .btn-icon svg {
     color: var(--text-secondary-color);
-    transition: color 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-icon:hover svg {
     color: var(--text-color);
+    transform: scale(1.1);
 }
 
 /* Tooltip样式 */
@@ -108,28 +132,31 @@ body {
 .btn-text-icon {
     display: flex;
     align-items: center;
-    height: 28px;
-    padding: 0 12px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
+    height: 32px;
+    padding: 0 var(--spacing-md);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
     color: var(--text-color);
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
 }
 
 .btn-text-icon:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--border-hover-color);
+    transform: translateY(-1px) scale(1.02);
+    box-shadow: 0 4px 12px var(--shadow-light);
 }
 
 .btn-text-icon .plus-icon {
     font-size: 16px;
     font-weight: 600;
     line-height: 1;
+    margin-right: 2px;
 }
 
 /* Settings Panel Styles */
@@ -196,31 +223,36 @@ body {
 .ratio-selector {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
 }
 
 .ratio-btn {
     background-color: var(--bg-secondary-color);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 12px 40px 12px 12px; /* Increased right padding for delete button */
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md) 40px var(--spacing-md) var(--spacing-md);
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--text-color);
     position: relative;
+    backdrop-filter: blur(10px);
 }
 
 .ratio-btn:hover {
-    background-color: #222224;
+    background-color: var(--bg-tertiary-color);
+    border-color: var(--border-hover-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 .ratio-btn.selected {
     border-color: var(--primary-color);
-    background-color: rgba(94, 106, 210, 0.1);
+    background-color: rgba(94, 106, 210, 0.12);
+    box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.1);
 }
 
 .ratio-name {
@@ -265,36 +297,43 @@ body {
 .actions {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 6px;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
 }
 
 .btn {
     border: none;
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md) var(--spacing-lg);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: filter 0.2s, background-color 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 40px;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn:disabled {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.4;
+    transform: none !important;
 }
 
 .btn-primary {
-    background: linear-gradient(to bottom, #5e6ad2, #505ac0);
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
     color: white;
-    box-shadow: 0 1px 2px var(--shadow-color);
+    box-shadow: 0 2px 8px rgba(94, 106, 210, 0.3);
+    border: 1px solid transparent;
 }
 
 .btn-primary:not(:disabled):hover {
-    filter: brightness(1.1);
+    background: linear-gradient(135deg, var(--primary-hover-color), #7481e4);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(94, 106, 210, 0.4);
 }
 
 .btn-secondary {
@@ -304,7 +343,9 @@ body {
 }
 
 .btn-secondary:hover {
-    background-color: #222224;
+    background-color: var(--bg-tertiary-color);
+    border-color: var(--border-hover-color);
+    transform: translateY(-1px);
 }
 
 .new-ratio-controls {
@@ -428,31 +469,48 @@ body {
 .status-message {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px;
-    border-radius: 6px;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--border-radius);
     font-size: 13px;
+    font-weight: 500;
     border: 1px solid var(--border-color);
     background-color: var(--bg-secondary-color);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px var(--shadow-light);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .status-message.info {
-    border-color: var(--border-color);
+    border-color: var(--primary-color);
+    background-color: rgba(94, 106, 210, 0.1);
+    color: #a5b4fc;
 }
 
 .status-message.success {
-    border-color: #22c55e; /* Green border for success */
+    border-color: var(--success-color);
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #86efac;
 }
 
 .status-message.error {
-    border-color: #ef4444; /* Red border for error */
+    border-color: var(--error-color);
+    background-color: rgba(239, 68, 68, 0.1);
+    color: #fca5a5;
+}
+
+.status-message.warning {
+    border-color: var(--warning-color);
+    background-color: rgba(245, 158, 11, 0.1);
+    color: #fcd34d;
 }
 
 /* 分隔线样式 */
 .divider {
     height: 1px;
-    background-color: rgba(255, 255, 255, 0.1);
-    margin: 6px 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    margin: var(--spacing-md) 0;
+    border: none;
 }
 
 /* 次要操作区域 */
@@ -466,21 +524,25 @@ body {
     background-color: transparent;
     color: var(--text-color);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md) var(--spacing-lg);
     font-size: 14px;
-    font-weight: 500; /* 稍微轻一点的字重 */
+    font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 40px;
+    backdrop-filter: blur(10px);
 }
 
 .btn-secondary-action:hover {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.06);
+    border-color: var(--border-hover-color);
     color: var(--text-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--shadow-light);
 }
 
 /* 自定义比例容器 */

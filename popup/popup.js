@@ -1,5 +1,5 @@
 /**
- * CaptureX Popup Interaction Logic
+ * CaptureX Popup Interaction Logic (Chinese, Optimized)
  * Manages UI, state, custom sizes, settings, and message passing.
  */
 
@@ -34,20 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function assignDOMElements() {
     Object.assign(elements, {
-        // Main containers
         ratioSelector: document.querySelector('.ratio-selector'),
         customRatioContainer: document.getElementById('custom-ratio-container'),
-        // Buttons
         addNewRatioBtn: document.getElementById('add-new-ratio-btn'),
         settingsBtn: document.getElementById('settings-btn'),
         startCaptureBtn: document.getElementById('start-capture'),
         captureFullPageBtn: document.getElementById('capture-full-page'),
         cancelCaptureBtn: document.getElementById('cancel-capture'),
         cancelNewRatioBtn: document.getElementById('cancel-new-ratio-btn'),
-        // Forms & Panels
         newRatioForm: document.getElementById('new-ratio-form'),
         settingsPanel: document.getElementById('settings-panel'),
-        // Form inputs
         newRatioName: document.getElementById('new-ratio-name'),
         dimensionsRatio: document.getElementById('dimensions-ratio'),
         dimensionsPixels: document.getElementById('dimensions-pixels'),
@@ -55,10 +51,8 @@ function assignDOMElements() {
         ratioHeight: document.getElementById('ratio-height'),
         pixelWidth: document.getElementById('pixel-width'),
         pixelHeight: document.getElementById('pixel-height'),
-        // Settings
         shortcutsList: document.getElementById('shortcuts-list'),
         manageShortcutsLink: document.getElementById('manage-shortcuts-link'),
-        // Status
         statusMessage: document.getElementById('status-message'),
         statusText: document.querySelector('.status-text'),
         statusIcon: document.querySelector('.status-icon'),
@@ -71,8 +65,6 @@ function loadDataFromStorage() {
         selectedConfig = data.selectedConfig;
         renderCustomRatios();
         if (selectedConfig) {
-            // Highlight the previously selected ratio if it exists
-            // This is a simple check; a more robust version might use an ID
             document.querySelectorAll('.ratio-btn').forEach(btn => {
                 if (btn.querySelector('.ratio-name').textContent === selectedConfig.name) {
                     btn.classList.add('selected');
@@ -114,13 +106,13 @@ function attachEventListeners() {
 
 function toggleNewRatioForm(show) {
     elements.newRatioForm.style.display = show ? 'flex' : 'none';
-    if (show) toggleSettingsPanel(false); // Hide settings if showing form
+    if (show) toggleSettingsPanel(false);
 }
 
 function toggleSettingsPanel(forceState) {
     const shouldShow = forceState !== undefined ? forceState : elements.settingsPanel.style.display === 'none';
     elements.settingsPanel.style.display = shouldShow ? 'block' : 'none';
-    if (shouldShow) toggleNewRatioForm(false); // Hide form if showing settings
+    if (shouldShow) toggleNewRatioForm(false);
 }
 
 // ============================================================================
@@ -181,13 +173,9 @@ function createRatioButton(config, index) {
         <button class="delete-btn" title="删除此尺寸">×</button>
     `;
 
-    btn.addEventListener('click', (e) => {
-        if (e.target.classList.contains('delete-btn')) {
-            e.stopPropagation();
-            deleteCustomRatio(index);
-        } else {
-            selectRatio(btn);
-        }
+    btn.querySelector('.delete-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteCustomRatio(index);
     });
     return btn;
 }
@@ -195,14 +183,14 @@ function createRatioButton(config, index) {
 async function saveCustomRatio(config) {
     customRatios.push(config);
     await storage.set({ customRatios });
-    await loadCustomRatios();
+    renderCustomRatios();
     showStatusMessage('新尺寸已保存', 'success');
 }
 
 async function deleteCustomRatio(index) {
     customRatios.splice(index, 1);
     await storage.set({ customRatios });
-    await loadCustomRatios();
+    renderCustomRatios();
     showStatusMessage('尺寸已删除', 'info');
     if (selectedConfig && selectedConfig.index === index) {
         resetSelection();
@@ -221,30 +209,16 @@ function selectRatio(btn) {
     btn.classList.add('selected');
 
     const { type, ratio, width, height, index } = btn.dataset;
-    let newConfig = null;
+    const name = btn.querySelector('.ratio-name').textContent;
+    let newConfig = { name, type, index: index ? parseInt(index, 10) : null };
 
-    if (type === 'ratio') {
-        const ratioValue = parseFloat(ratio);
-        if (!isNaN(ratioValue) && ratioValue > 0) {
-            newConfig = { type: 'ratio', name: btn.querySelector('.ratio-name').textContent, ratio: ratioValue, index: index ? parseInt(index, 10) : null };
-        }
-    } else if (type === 'pixels') {
-        const widthValue = parseInt(width, 10);
-        const heightValue = parseInt(height, 10);
-        if (!isNaN(widthValue) && widthValue > 0 && !isNaN(heightValue) && heightValue > 0) {
-            newConfig = { type: 'pixels', name: btn.querySelector('.ratio-name').textContent, width: widthValue, height: heightValue, index: index ? parseInt(index, 10) : null };
-        }
-    }
+    if (type === 'ratio') newConfig.ratio = parseFloat(ratio);
+    else { newConfig.width = parseInt(width, 10); newConfig.height = parseInt(height, 10); }
 
-    if (newConfig) {
-        selectedConfig = newConfig;
-        storage.set({ selectedConfig: newConfig }); // Save for shortcut use
-        elements.startCaptureBtn.disabled = false;
-        showStatusMessage(`已选择: ${selectedConfig.name}`);
-    } else {
-        resetSelection();
-        showStatusMessage('选择的尺寸数据无效', 'error');
-    }
+    selectedConfig = newConfig;
+    storage.set({ selectedConfig });
+    elements.startCaptureBtn.disabled = false;
+    showStatusMessage(`已选择: ${name}`);
 }
 
 function handleFormTypeChange() {
@@ -291,19 +265,14 @@ async function startCapture() {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab || !tab.id) throw new Error('无法获取当前标签页');
         
-        console.log('Popup: Sending capture request for tab:', tab.id, 'config:', selectedConfig);
         const response = await chrome.runtime.sendMessage({ action: 'activateCapture', data: { config: selectedConfig, tabId: tab.id } });
-        console.log('Popup: Received response:', response);
         
         if (!response || !response.success) {
-            const errorMsg = response?.error || '启动截图失败';
-            throw new Error(errorMsg);
+            throw new Error(response?.error || '启动截图失败');
         }
         showStatusMessage('截图已激活', 'success');
-        // Close popup after successful activation
         setTimeout(() => window.close(), 500);
     } catch (error) {
-        console.error('Popup: Capture failed:', error);
         showStatusMessage(`启动失败: ${error.message}`, 'error');
         resetCaptureState();
     }
@@ -345,13 +314,10 @@ function updateUICapturingState(isCapturing) {
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.action) {
-        case 'captureComplete':
-            showStatusMessage(message.success ? '截图完成' : '截图失败', message.success ? 'success' : 'error');
-            resetCaptureState();
-            break;
+        case 'captureEnded':
         case 'captureCancelled':
             resetCaptureState();
-            showStatusMessage('已取消截图', 'info');
+            showStatusMessage('操作已完成', 'info');
             break;
         case 'captureError':
             showStatusMessage(`截图失败: ${message.error}`, 'error');

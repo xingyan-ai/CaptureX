@@ -9,7 +9,8 @@
     "scripting",
     "storage",
     "downloads",
-    "clipboardWrite"
+    "clipboardWrite",
+    "offscreen"
   ],
   "host_permissions": [
     "<all_urls>"

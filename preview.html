@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>CaptureX - 优化预览</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0f;
+            --bg-secondary-color: #1a1a1c;
+            --bg-tertiary-color: #2a2a2c;
+            --text-color: #e4e4e6;
+            --text-secondary-color: #8a8a8e;
+            --text-muted-color: #6a6a6e;
+            --primary-color: #5e6ad2;
+            --primary-hover-color: #6b77db;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover-color: rgba(255, 255, 255, 0.15);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --shadow-light: rgba(0, 0, 0, 0.2);
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --warning-color: #f59e0b;
+            --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --border-radius: 8px;
+            --border-radius-sm: 6px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 12px;
+            --spacing-lg: 16px;
+            --spacing-xl: 20px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preview-container {
+            width: 300px;
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-color);
+        }
+
+        .container {
+            padding: var(--spacing-lg);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            box-sizing: border-box;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 650;
+            color: var(--text-color);
+            margin: 0 0 var(--spacing-xs) 0;
+            letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-muted-color);
+            margin: 0;
+            font-weight: 400;
+            line-height: 1.4;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+            padding: 0;
+        }
+
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--border-radius-sm);
+            background-color: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-icon:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-hover-color);
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 4px 12px var(--shadow-light);
+        }
+
+        .btn-text-icon {
+            display: flex;
+            align-items: center;
+            height: 32px;
+            padding: 0 var(--spacing-md);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-sm);
+            color: var(--text-color);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-text-icon:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--border-hover-color);
+            transform: translateY(-1px) scale(1.02);
+            box-shadow: 0 4px 12px var(--shadow-light);
+        }
+
+        .ratio-selector {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .ratio-btn {
+            background-color: var(--bg-secondary-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            color: var(--text-color);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .ratio-btn:hover {
+            background-color: var(--bg-tertiary-color);
+            border-color: var(--border-hover-color);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px var(--shadow-light);
+        }
+
+        .ratio-btn.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(94, 106, 210, 0.12);
+            box-shadow: 0 0 0 3px rgba(94, 106, 210, 0.1);
+        }
+
+        .ratio-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ratio-value {
+            font-size: 13px;
+            color: var(--text-secondary-color);
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .btn {
+            border: none;
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md) var(--spacing-lg);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-hover-color));
+            color: white;
+            box-shadow: 0 2px 8px rgba(94, 106, 210, 0.3);
+            border: 1px solid transparent;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover-color), #7481e4);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(94, 106, 210, 0.4);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            margin: var(--spacing-md) 0;
+            border: none;
+        }
+
+        .status-message {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-secondary-color);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 8px var(--shadow-light);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .status-message.success {
+            border-color: var(--success-color);
+            background-color: rgba(34, 197, 94, 0.1);
+            color: #86efac;
+        }
+
+        .status-message.error {
+            border-color: var(--error-color);
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+        }
+
+        .status-message.info {
+            border-color: var(--primary-color);
+            background-color: rgba(94, 106, 210, 0.1);
+            color: #a5b4fc;
+        }
+
+        .demo-section {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .demo-title {
+            color: var(--text-color);
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-section">
+        <h2 class="demo-title">CaptureX - 优化后界面</h2>
+        <div class="preview-container">
+            <div class="container">
+                <header class="header">
+                    <h1 class="title">CaptureX</h1>
+                    <p class="subtitle">不止于截屏，记录你的每一次"看见"</p>
+                </header>
+
+                <div class="header-actions">
+                    <button class="btn-text-icon">
+                        <span style="font-size: 16px; font-weight: 600; margin-right: 2px;">+</span>新建尺寸
+                    </button>
+                    <button class="btn-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="ratio-selector">
+                    <button class="ratio-btn selected">
+                        <span class="ratio-name">博客封面</span>
+                        <span class="ratio-value">1.75:1</span>
+                    </button>
+                    <button class="ratio-btn">
+                        <span class="ratio-name">公众号封面</span>
+                        <span class="ratio-value">2.35:1</span>
+                    </button>
+                </div>
+
+                <div class="actions">
+                    <button class="btn btn-primary">开始截图</button>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="status-message success">
+                    <span>✅</span>
+                    <span>截图已成功复制到剪贴板</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2 class="demo-title">Toast 提示效果</h2>
+        <div class="preview-container">
+            <div class="container">
+                <div class="status-message info">
+                    <span>ℹ️</span>
+                    <span>请在页面上拖拽调整截图区域</span>
+                </div>
+                
+                <div class="status-message success">
+                    <span>✅</span>
+                    <span>图片下载完成</span>
+                </div>
+                
+                <div class="status-message error">
+                    <span>❌</span>
+                    <span>截图失败，请重试</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
